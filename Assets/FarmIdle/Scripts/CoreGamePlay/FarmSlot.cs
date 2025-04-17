@@ -16,6 +16,8 @@ namespace CoreGamePlay
 
         public bool IsEmpty => Entities.Count == 0;
         public bool IsFull => Entities.Count >= MaxEntityPerSlot;
+        // Callback để thông báo UI cần update lại
+        public Action OnEntitiesChanged;
 
         public bool CanAssign(string type)
         {
@@ -76,27 +78,43 @@ namespace CoreGamePlay
         {
             return Entities.Any(e => e.CanHarvest(now));
         }
-
+        // Gộp logic hiển thị countdown chính
         public string GetRemainingTimeText(DateTime now)
         {
-            int seconds = GetRemainingSeconds(now);
-            var span = TimeSpan.FromSeconds(seconds);
-            return $"{span:hh\\:mm\\:ss}";
-        }
-
-        public int GetRemainingSeconds(DateTime now)
-        {
-            int total = 0;
-
-            foreach (var entity in Entities)
+            // 1. Dọn dẹp: Xoá các cây đã héo (quá 1h sau khi full trái)
+            int removed = Entities.RemoveAll(e => e.IsExpired(now) && e.CheckDestroyItem(now));
+            if (removed > 0)
             {
-                if (!entity.IsExpired(now))
-                {
-                    total += entity.GetRemainingSeconds(now);
-                }
+                OnEntitiesChanged?.Invoke(); // thông báo UI cập nhật lại
             }
 
-            return total;
+            // Ưu tiên hiển thị cây đã full trái và đang đếm ngược đến thời điểm héo
+            var rotEntity = Entities
+                .Where(e => e.IsExpired(now))
+                .OrderBy(e => e.GetSecondsUntilRot(now))
+                .FirstOrDefault();
+
+            if (rotEntity != null)
+            {
+                int rotSeconds = rotEntity.GetSecondsUntilRot(now);
+                var rotSpan = TimeSpan.FromSeconds(rotSeconds);
+                return $"Sắp héo! {rotSpan:hh\\:mm\\:ss}";
+            }
+            else
+            {
+                var firstHarvestEntity = Entities
+                    .Where(e => !e.IsExpired(now))
+                    .OrderBy(e => e.RemainingLifeSeconds(now))
+                    .FirstOrDefault();
+
+                if (firstHarvestEntity != null)
+                {
+                    int remainSeconds = firstHarvestEntity.RemainingLifeSeconds(now);
+                    var remainSpan = TimeSpan.FromSeconds(remainSeconds);
+                    return $"Còn {remainSpan:hh\\:mm\\:ss}";
+                }
+                return "";
+            }
         }
 
         public int GetTotalYielded() => Entities.Sum(e => e.Yielded);

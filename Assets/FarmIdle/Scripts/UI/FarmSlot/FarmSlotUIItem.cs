@@ -4,6 +4,7 @@ using TMPro;
 using CoreGamePlay;
 using Service;
 using System;
+using System.Collections;
 
 public class FarmSlotUIItem : MonoBehaviour
 {
@@ -25,9 +26,10 @@ public class FarmSlotUIItem : MonoBehaviour
         this.slotIndex = index;
         this.slot = slot;
         this.farmService = service;
-
+        if(slot == null) return;
+        slot.OnEntitiesChanged += RefreshUI;
         RefreshUI();
-
+        StartCoroutine(UpdateTimeRemaining());
         plantButton.onClick.RemoveAllListeners();
         plantButton.onClick.AddListener(OnPlantClick);
 
@@ -41,7 +43,18 @@ public class FarmSlotUIItem : MonoBehaviour
     {
         PopupManager.instance.OpenPopup(PopupIDs.SelectFarmSlotRole, this);
     }
+    public IEnumerator UpdateTimeRemaining()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(1f);
 
+            if (slot.LockedType != null)
+            {
+                timeText.text = slot.GetRemainingTimeText(DateTime.Now);
+            }
+        }
+    }
     public void RefreshUI()
     {
         if (slot.LockedType == null)

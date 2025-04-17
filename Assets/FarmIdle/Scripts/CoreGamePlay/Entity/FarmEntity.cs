@@ -1,14 +1,15 @@
 using System;
+using Newtonsoft.Json;
 
 namespace CoreGamePlay
 {
     public abstract class FarmEntity
     {
-        public string Name { get; protected set; }
-        public int YieldIntervalSeconds { get; protected set; }
-        public int MaxYield { get; protected set; }
-        public int Yielded { get; protected set; }
-        public DateTime BornAt { get; protected set; }
+        [JsonProperty] public string Name { get; protected set; }
+        [JsonProperty] public int YieldIntervalSeconds { get; protected set; }
+        [JsonProperty] public int MaxYield { get; protected set; }
+        [JsonProperty] public int Yielded { get; protected set; }
+        [JsonProperty] public DateTime BornAt { get; protected set; }
         public FarmEntity(string name, int intervalSeconds, int maxYield, DateTime bornAt)
         {
             Name = name;
@@ -44,12 +45,41 @@ namespace CoreGamePlay
             Yielded += baseAmount;
             return finalAmount;
         }
-
-        public int GetRemainingSeconds(DateTime now)
+        public bool IsWaitingForFinalHarvest(DateTime now)
         {
-            int totalSeconds = MaxYield * YieldIntervalSeconds;
+            return Yielded >= MaxYield && !IsExpired(now);
+        }
+        // 1. Bao lâu nữa sẽ ra sản phẩm tiếp theo
+        public int GetSecondsUntilNextYield(DateTime now)
+        {
+            int total = (int)((now - BornAt).TotalSeconds);
+            int nextYieldAt = (Yielded + 1) * YieldIntervalSeconds;
+            return Math.Max(0, nextYieldAt - total);
+        }
+        public int RemainingLifeSeconds(DateTime now)
+        {
+            int total = MaxYield * YieldIntervalSeconds;
             int elapsed = (int)(now - BornAt).TotalSeconds;
-            return Math.Max(0, totalSeconds - elapsed);
+            return Math.Max(0, total - elapsed);
+        }
+        // 3. Sau khi đủ số sản phẩm, bao lâu sẽ phân hủy
+        public int GetSecondsUntilRot(DateTime now)
+        {
+            if (!IsExpired(now)) return 0;
+            var rotTime = BornAt
+                .AddSeconds(MaxYield * YieldIntervalSeconds)
+                .AddHours(1);
+            return (int)Math.Max(0, (rotTime - now).TotalSeconds);
+        }
+        public bool CheckDestroyItem(DateTime now)
+        {
+            if (!IsExpired(now)) return false;
+            var rotTime = BornAt
+                .AddSeconds(MaxYield * YieldIntervalSeconds)
+                .AddHours(1);
+            int second = (int)Math.Max(0, (rotTime - now).TotalSeconds);
+            if (second <= 0) return true;
+            return false;
         }
     }
 }

@@ -24,7 +24,7 @@ namespace Data
             // Inventory mẫu
             Inventory["TomatoSeed"] = 10;
             Inventory["BlueberrySeed"] = 10;
-            Inventory["Cow"] = 0;
+            Inventory["CowSeed"] = 10;
         }
         public void ClearData()
         {
