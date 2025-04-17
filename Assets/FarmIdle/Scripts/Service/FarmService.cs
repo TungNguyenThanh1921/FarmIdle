@@ -1,57 +1,88 @@
 using System;
-using System.Collections.Generic;
-using CoreGamePlay;
+using System.Linq;
 using CoreBase;
+using Data;
 
 namespace Service
 {
     public class FarmService
     {
-        public List<FarmSlot> Slots { get; private set; } = new();
-        public List<WorkerEntity> Workers { get; private set; } = new();
+        private readonly UserData userData;
+        private readonly InventoryService inventory;
         private readonly ITimeProvider time;
 
-        public FarmService(int initialSlots, int initialWorkers, ITimeProvider timeProvider)
+        public FarmService(UserData userData, InventoryService inventory, ITimeProvider timeProvider)
         {
-            time = timeProvider;
-            for (int i = 0; i < initialSlots; i++) Slots.Add(new FarmSlot());
-            for (int i = 0; i < initialWorkers; i++) Workers.Add(new GeneralWorker());
+            this.userData = userData;
+            this.inventory = inventory;
+            this.time = timeProvider;
         }
 
-        public bool TryAssignEntity(int slotIndex, FarmEntity entity)
+        /// <summary>
+        /// Trồng tự động vào mảnh đầu tiên hợp lệ (nếu dùng)
+        /// </summary>
+        public bool TryPlant()
         {
-            if (slotIndex < 0 || slotIndex >= Slots.Count) return false;
-            if (!Slots[slotIndex].IsEmpty) return false;
+            for (int i = 0; i < userData.Slots.Count; i++)
+            {
+                if (TryPlantAtSlot(i)) return true;
+            }
 
-            Slots[slotIndex].AssignEntity(entity);
-            return true;
+            UnityEngine.Debug.LogWarning("❌ Không tìm thấy slot hợp lệ để trồng.");
+            return false;
         }
 
+        /// <summary>
+        /// Trồng 1 cây vào đúng mảnh chỉ định
+        /// </summary>
+        public bool TryPlantAtSlot(int slotIndex)
+        {
+            if (slotIndex < 0 || slotIndex >= userData.Slots.Count)
+                return false;
+
+            var slot = userData.Slots[slotIndex];
+            if (slot.IsFull || string.IsNullOrEmpty(slot.LockedType)) return false;
+
+            string cropId = slot.LockedType;
+            if (!FarmEntityConfigLoader.All.TryGetValue(cropId, out var cfg)) return false;
+
+            string seedId = cropId + "Seed";
+            if (!inventory.HasEnoughItem(seedId, cfg.SeedRequired)) return false;
+
+            inventory.SpendItem(seedId, cfg.SeedRequired);
+            return slot.TryAddOneEntity(cropId, () => FarmEntityFactory.Create(cropId, time.Now));
+        }
+
+        /// <summary>
+        /// Thu hoạch toàn bộ mảnh đất
+        /// </summary>
         public int HarvestSlot(int slotIndex)
         {
-            var slot = Slots[slotIndex];
-            return slot.Entity?.Harvest(time.Now) ?? 0;
-        }
+            if (slotIndex < 0 || slotIndex >= userData.Slots.Count)
+                return 0;
 
-        public void AssignWorkerTo(Action task, TimeSpan duration)
-        {
-            var idle = Workers.Find(w => !w.IsBusy);
-            if (idle != null)
-            {
-                idle.AssignTask(duration, time.Now);
-                task.Invoke();
-                idle.CompleteTask();
-            }
-        }
+            var slot = userData.Slots[slotIndex];
 
-        public List<FarmEntity> GetAllActiveEntities()
-        {
-            List<FarmEntity> list = new();
-            foreach (var slot in Slots)
+            if (!slot.CanHarvestAny(time.Now)) return 0;
+
+            int removed;
+            int harvested = slot.HarvestAll(time.Now, userData.Equipment, out removed);
+
+            if (harvested > 0)
             {
-                if (!slot.IsEmpty) list.Add(slot.Entity);
+                string product = slot.GetProductName();
+                inventory.AddItem(product, harvested);
             }
-            return list;
+
+            return harvested;
+        }
+        public bool TryAssignRoleToSlot(int slotIndex, string type)
+        {
+            if (slotIndex < 0 || slotIndex >= userData.Slots.Count)
+                return false;
+
+            var slot = userData.Slots[slotIndex];
+            return slot.AssignRole(type);
         }
     }
 }

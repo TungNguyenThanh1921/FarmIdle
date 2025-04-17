@@ -145,15 +145,10 @@ public class PopupManager : ObserverEventManager
 }
 public enum PopupIDs
 {
-    MAIN,
-    SETTING,
-    HOME,
-    InformationItemPopup,
-    InformationSkillItemPopup,
-    InformationItemUpgradePopup,
-    AnnouncePopup,
-    DisassemblePopup,
-    MiniAnnouncePopup,
+    SelectFarmSlotRole,
+    Inventory,
+    Shop,
+    Equipment,
 }
 public enum PopupAnimationType
 {

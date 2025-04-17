@@ -4,16 +4,8 @@ namespace CoreGamePlay
 {
     public class Crop : FarmEntity
     {
-        public Crop(string name, TimeSpan interval, int maxYield, DateTime plantedAt)
-           : base(name, interval, maxYield, plantedAt)
+        public Crop(string name, int intervalSeconds, int maxYield, DateTime bornAt) : base(name, intervalSeconds, maxYield, bornAt)
         {
-        }
-
-        public override int Harvest(DateTime now)
-        {
-            int amount = GetAvailableYield(now);
-            Yielded += amount;
-            return amount;
         }
     }
 }

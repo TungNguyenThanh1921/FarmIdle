@@ -4,14 +4,18 @@ using UnityEngine;
 
 public class EventKeys
 {
-    public class UI
-    {
-        public const string GAME_CONTROLLER = "GameController";
-        public const string OPEN_POPUP = "OpenPopup";
-        public const string CLOSE_POPUP = "ClosePopup";
-    }
     public class GameController
     {
-        public const string ADD_LOADER = "AddLoader";
+        public const string ADD_LOADER = "add_loader";
     }
+    public class UI
+    {
+        public const string BACK_LAST_SCREEN = "back_last_screen";
+        public const string ACTIVE_SCREEN = "active_screen";
+        public const string CLOSE_POPUP = "close_popup";
+        public const string OPEN_POPUP = "open_popup";
+        public const string UPDATE_MONEY = "UPDATE_MONEY";
+    }
+
+
 }

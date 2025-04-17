@@ -27,20 +27,20 @@ namespace Service
             {
                 if (slot.IsEmpty) continue;
 
-                var entity = slot.Entity;
-                int available = entity.GetAvailableYield(now);
-
-                if (available > 0)
+                foreach (var entity in slot.Entities)
                 {
-                    results.Add(new OfflineYieldResult
+                    int available = entity.GetAvailableYield(now);
+                    if (available > 0)
                     {
-                        Name = entity.Name,
-                        SlotIndex = _userData.Slots.IndexOf(slot),
-                        Amount = available
-                    });
+                        results.Add(new OfflineYieldResult
+                        {
+                            Name = entity.Name,
+                            SlotIndex = _userData.Slots.IndexOf(slot),
+                            Amount = available
+                        });
 
-                    // Mark as already harvested (for logic consistency)
-                    entity.Harvest(now);
+                        entity.Harvest(now);
+                    }
                 }
             }
 

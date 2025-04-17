@@ -5,35 +5,51 @@ namespace CoreGamePlay
     public abstract class FarmEntity
     {
         public string Name { get; protected set; }
-        public TimeSpan YieldInterval { get; protected set; }
+        public int YieldIntervalSeconds { get; protected set; }
         public int MaxYield { get; protected set; }
         public int Yielded { get; protected set; }
-        public DateTime StartTime { get; protected set; }
-
-        public FarmEntity(string name, TimeSpan interval, int maxYield, DateTime startTime)
+        public DateTime BornAt { get; protected set; }
+        public FarmEntity(string name, int intervalSeconds, int maxYield, DateTime bornAt)
         {
             Name = name;
-            YieldInterval = interval;
+            YieldIntervalSeconds = intervalSeconds;
             MaxYield = maxYield;
-            StartTime = startTime;
+            BornAt = bornAt;
             Yielded = 0;
         }
 
-        public virtual int GetAvailableYield(DateTime now)
+        public bool IsExpired(DateTime now)
         {
-            int total = (int)((now - StartTime).TotalMinutes / YieldInterval.TotalMinutes);
-            total = Math.Min(total, MaxYield);
-            return Math.Max(0, total - Yielded);
+            int lifeTime = MaxYield * YieldIntervalSeconds;
+            return (now - BornAt).TotalSeconds >= lifeTime;
         }
 
-        public virtual bool CanHarvest(DateTime now) => GetAvailableYield(now) > 0;
-
-        public virtual bool IsDead(DateTime now, TimeSpan gracePeriod)
+        public bool CanHarvest(DateTime now)
         {
-            var end = StartTime + YieldInterval * MaxYield;
-            return now > end + gracePeriod;
+            return GetAvailableYield(now) > 0;
         }
 
-        public abstract int Harvest(DateTime now);
+        public int GetAvailableYield(DateTime now)
+        {
+            int total = (int)((now - BornAt).TotalSeconds / YieldIntervalSeconds);
+            int available = total - Yielded;
+            return Math.Max(0, available);
+        }
+
+        public int Harvest(DateTime now, EquipmentEntity equipment = null)
+        {
+            int baseAmount = GetAvailableYield(now);
+            int finalAmount = equipment != null ? equipment.ApplyBonus(baseAmount) : baseAmount;
+
+            Yielded += baseAmount;
+            return finalAmount;
+        }
+
+        public int GetRemainingSeconds(DateTime now)
+        {
+            int totalSeconds = MaxYield * YieldIntervalSeconds;
+            int elapsed = (int)(now - BornAt).TotalSeconds;
+            return Math.Max(0, totalSeconds - elapsed);
+        }
     }
 }
