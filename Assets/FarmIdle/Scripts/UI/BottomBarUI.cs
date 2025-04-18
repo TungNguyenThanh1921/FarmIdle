@@ -34,10 +34,10 @@ public class BottomBarUI : MonoBehaviour
     }
     private void OpenTools()
     {
-
+        PopupManager.Instance.OpenPopup(PopupIDs.Equipment);
     }
     private void OpenShop()
     {
-
+        PopupManager.Instance.OpenPopup(PopupIDs.Shop);
     }
 }

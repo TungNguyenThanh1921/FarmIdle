@@ -1,6 +1,6 @@
-Id,DisplayName,Type,YieldInterval,MaxYield,SeedRequired,SellPrice,ProductId
-Tomato,Tomato,Crop,600,40,1,5,Tomato
-Blueberry,Blueberry,Crop,900,40,1,8,Blueberry
-Strawberry,Strawberry,Crop,300,20,1,10,Strawberry
-Cow,Cow,Animal,1800,100,1,15,Milk
-Chicken,Chicken,Animal,600,60,1,7,Egg
+Id,DisplayName,Type,YieldInterval,MaxYield,SeedRequired,SellPrice,ProductId,BuyPrice,IsBulk
+Tomato,Tomato,Crop,600,40,1,5,Tomato,30,TRUE
+Blueberry,Blueberry,Crop,900,40,1,8,Blueberry,50,TRUE
+Strawberry,Strawberry,Crop,300,20,2,10,Strawberry,400,TRUE
+Cow,Cow,Animal,1800,100,1,15,Milk,100,FALSE
+Chicken,Chicken,Animal,600,60,1,7,Egg,80,FALSE

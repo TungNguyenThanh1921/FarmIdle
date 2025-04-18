@@ -8,18 +8,22 @@ namespace CoreGamePlay
     public class FarmSlot
     {
         [JsonProperty]
+        public LandEntity Land { get; private set; }
+        [JsonProperty]
         public string LockedType { get; private set; }
         [JsonProperty]
         public List<FarmEntity> Entities { get; private set; } = new();
 
-        private const int MaxEntityPerSlot = 5;
+        public bool IsFull => Entities.Count >= Land.Config.SlotCount;
 
         public bool IsEmpty => Entities.Count == 0;
-        public bool IsFull => Entities.Count >= MaxEntityPerSlot;
         // Callback để thông báo UI cần update lại
         [JsonIgnore]
         public Action OnEntitiesChanged;
-
+        public FarmSlot(LandEntity land)
+        {
+            Land = land;
+        }
         public bool CanAssign(string type)
         {
             return LockedType == null || LockedType == type;
@@ -44,8 +48,20 @@ namespace CoreGamePlay
             for (int i = Entities.Count - 1; i >= 0; i--)
             {
                 var entity = Entities[i];
-                int yield = entity.Harvest(now, equipment);
-                totalYield += yield;
+                int baseAmount = entity.GetAvailableYield(now);
+
+                // Tính bonus từ thiết bị
+                int bonusAmount = equipment != null ? equipment.ApplyBonus(baseAmount) : baseAmount;
+
+                // Cộng thêm buff từ đất (nếu có)
+                if (Land != null && Land.Config.YieldBuffPercent > 0)
+                {
+                    bonusAmount = (int)(bonusAmount * (1 + Land.Config.YieldBuffPercent / 100f));
+                }
+
+                // Cập nhật số trái đã thu
+                entity.Harvest(now); // chỉ cập nhật Yielded thôi
+                totalYield += bonusAmount;
 
                 if (entity.Yielded >= entity.MaxYield)
                 {

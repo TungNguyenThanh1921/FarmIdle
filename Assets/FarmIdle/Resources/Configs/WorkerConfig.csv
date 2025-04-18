@@ -1,0 +1,4 @@
+Id,DisplayName,Price,ActionTimeSeconds,AutoHarvest
+Basic,Worker,500,120,TRUE
+Fast,Fast Worker,800,60,TRUE
+Manual,Manual Help,300,120,FALSE

@@ -9,4 +9,6 @@ public class FarmEntityConfigData
     public string ProductName;
     public int SellPrice;
     public string ProductId;
+    public int BuyPrice; // NEW
+    public bool IsBulk;  // NEW
 }

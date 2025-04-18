@@ -34,13 +34,15 @@ public static class FarmEntityConfigLoader
             var config = new FarmEntityConfigData
             {
                 Id = cells[0].Trim(),
-                Type = cells[1].Trim(),
-                DisplayName = cells[2],
-                YieldInterval = int.Parse(cells[3]),
-                MaxYield = int.Parse(cells[4]),
-                SeedRequired = int.Parse(cells[5]),
-                SellPrice = int.Parse(cells[6]),
-                ProductId = cells[7].Trim()
+                DisplayName = cells[1].Trim(),
+                Type = cells[2].Trim(),
+                YieldInterval = int.Parse(cells[3].Trim()),
+                MaxYield = int.Parse(cells[4].Trim()),
+                SeedRequired = int.Parse(cells[5].Trim()),
+                SellPrice = int.Parse(cells[6].Trim()),
+                ProductId = cells[7].Trim(),
+                BuyPrice = int.Parse(cells[8].Trim()),     // ✅ đúng là 30
+                IsBulk = bool.TryParse(cells[9].Trim(), out bool isBulk) && isBulk
             };
 
             All[config.Id] = config;

@@ -20,6 +20,9 @@ public class GameData : MonoBehaviour
         }
         FileManager.Init(new UnityPathProvider());
         FarmEntityConfigLoader.Load();
+        WorkerConfigLoader.Load();
+        EquipmentConfigLoader.Load();
+        LandConfigLoader.Load();
         Instance = this;
         LoadPlayerData();
 

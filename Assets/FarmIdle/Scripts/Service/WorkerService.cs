@@ -38,7 +38,7 @@ namespace Service
             {
                 if (!worker.IsBusy)
                 {
-                    worker.AssignTask(duration, now);
+                    worker.AssignTask(now);
                     taskCallback?.Invoke();
                     return true;
                 }
@@ -59,7 +59,7 @@ namespace Service
 
         public void HireWorker()
         {
-            _userData.Workers.Add(new GeneralWorker());
+            _userData.Workers.Add(new WorkerEntity());
         }
     }
 }

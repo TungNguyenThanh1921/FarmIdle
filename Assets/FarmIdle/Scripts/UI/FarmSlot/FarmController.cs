@@ -7,6 +7,8 @@ using Data;
 using CoreBase;
 using System.Collections.Generic;
 using System.Collections;
+using Observer;
+using System;
 
 public class FarmController : MonoBehaviour
 {
@@ -25,8 +27,12 @@ public class FarmController : MonoBehaviour
         yield return new WaitUntil(() => GameData.Instance != null);
         InitServices();
         InitSlotUI();
+        ObserverManager.Instance.Attach(EventKeys.UI.UPDATE_LAND, (Action)InitSlotUI);
     }
-
+    void OnDestroy()
+    {
+        ObserverEventManager.detach(EventKeys.UI.UPDATE_LAND, (Action)InitSlotUI);
+    }
     private void InitServices()
     {
         // 🧠 Tạo dữ liệu và các service cần thiết

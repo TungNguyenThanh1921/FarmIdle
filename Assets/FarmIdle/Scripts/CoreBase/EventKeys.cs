@@ -15,6 +15,8 @@ public class EventKeys
         public const string CLOSE_POPUP = "close_popup";
         public const string OPEN_POPUP = "open_popup";
         public const string UPDATE_MONEY = "UPDATE_MONEY";
+        public const string UPDATE_LAND = "UPDATE_LAND";
+
     }
 
 
