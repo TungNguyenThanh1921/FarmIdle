@@ -37,13 +37,15 @@ public static class EquipmentConfigLoader
 
             var config = new EquipmentConfigData
             {
-                Id = cells[0].Trim(),
-                DisplayName = cells[1].Trim(),
-                Price = int.Parse(cells[2]),
-                BoostPercent = int.Parse(cells[3]),
-                Level = int.Parse(cells[4])
-            };
 
+            };
+            config.Id = cells[0].Trim();
+            config.DisplayName = cells[1].Trim();
+            config.Price = int.Parse(cells[2]);
+            config.BoostPercent = int.Parse(cells[3]);
+            config.Level = int.Parse(cells[4]);
+            config.UpgradeCostBase = int.Parse(cells[5]);
+            config.MaxLevel = int.Parse(cells[6]);
             All[config.Id] = config;
         }
 
