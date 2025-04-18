@@ -66,7 +66,7 @@ namespace Service
             if (!slot.CanHarvestAny(time.Now)) return 0;
 
             int removed;
-            int harvested = slot.HarvestAll(time.Now, userData.Equipment, out removed);
+            int harvested = slot.HarvestAll(time.Now, userData.Equipments, out removed);
 
             if (harvested > 0)
             {

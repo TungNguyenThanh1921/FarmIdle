@@ -9,7 +9,7 @@ namespace Data
     {
         public int Gold = 1000;
         public Dictionary<string, int> Inventory = new();
-        public EquipmentEntity Equipment;
+        public List<EquipmentEntity> Equipments = new();
         public List<FarmSlot> Slots = new();
         public List<WorkerEntity> Workers = new();
         public System.DateTime LastExitTime;
@@ -22,7 +22,8 @@ namespace Data
             Inventory["BlueberrySeed"] = 10;
             Inventory["CowSeed"] = 10;
 
-            Equipment = new EquipmentEntity(EquipmentConfigLoader.GetDefault());
+            Equipments = new List<EquipmentEntity>();
+            Equipments.Add(new EquipmentEntity(EquipmentConfigLoader.GetDefault()));
             Slots = new List<FarmSlot>();
             for (int i = 0; i < 3; i++)
             {
@@ -39,7 +40,7 @@ namespace Data
         {
             Gold = 0;
             Inventory = new();
-            Equipment = null;
+            Equipments = new();
             Slots = new();
             Workers = new();
         }

@@ -58,7 +58,8 @@ public class ShopService
 
         if (!_inventory.SpendGold(config.Price)) return false;
 
-        _userData.Equipment = new EquipmentEntity(config);
+        // Thêm thiết bị mới vào danh sách
+        _userData.Equipments.Add(new EquipmentEntity(config));
         return true;
     }
 }

@@ -1,35 +1,53 @@
+using System.Linq;
 using Data;
-using Service;
+using CoreGamePlay;
+using System.Collections.Generic;
 
-public class EquipmentService
+namespace Service
 {
-    private readonly UserData _userData;
-    private readonly InventoryService _inventory;
-
-    public EquipmentService(UserData data, InventoryService inventory)
+    public class EquipmentService
     {
-        _userData = data;
-        _inventory = inventory;
-    }
+        private readonly UserData _userData;
+        private readonly InventoryService _inventory;
 
-    public bool TryUpgrade(string id)
-    {
-        if (_userData.Equipment == null) return false;
-        if (_userData.Equipment.Config.Id != id) return false;
+        public EquipmentService(UserData data, InventoryService inventory)
+        {
+            _userData = data;
+            _inventory = inventory;
+        }
 
-        if (_userData.Equipment.Level >= _userData.Equipment.Config.MaxLevel)
-            return false;
+        /// <summary>
+        /// Nâng cấp thiết bị với id tương ứng (nếu tìm thấy và đủ điều kiện)
+        /// </summary>
+        public bool TryUpgrade(string id)
+        {
+            var equip = _userData.Equipments.FirstOrDefault(e => e.Config.Id == id);
+            if (equip == null) return false;
 
-        int upgradeCost = CalculateUpgradeCost(_userData.Equipment.Config, _userData.Equipment.Level);
-        if (!_inventory.SpendGold(upgradeCost)) return false;
+            if (equip.Level >= equip.Config.MaxLevel)
+                return false;
 
-        _userData.Equipment.Upgrade();
-        return true;
-    }
+            int upgradeCost = CalculateUpgradeCost(equip.Config, equip.Level);
+            if (!_inventory.SpendGold(upgradeCost)) return false;
 
-    private int CalculateUpgradeCost(EquipmentConfigData config, int currentLevel)
-    {
-        // Ví dụ: upgrade từ level 1 lên 2 → cost = BasePrice * 2
-        return config.Price * currentLevel;
+            equip.Upgrade();
+            return true;
+        }
+
+        /// <summary>
+        /// Tính giá nâng cấp cho thiết bị
+        /// </summary>
+        public static int CalculateUpgradeCost(EquipmentConfigData config, int currentLevel)
+        {
+            return config.Price * currentLevel;
+        }
+
+        /// <summary>
+        /// Lấy danh sách thiết bị hiện có
+        /// </summary>
+        public List<EquipmentEntity> GetAllEquipments()
+        {
+            return _userData.Equipments;
+        }
     }
 }

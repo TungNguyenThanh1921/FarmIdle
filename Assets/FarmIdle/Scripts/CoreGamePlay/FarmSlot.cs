@@ -40,32 +40,39 @@ namespace CoreGamePlay
             return true;
         }
 
-        public int HarvestAll(DateTime now, EquipmentEntity equipment, out int removedCount)
+        public int HarvestAll(DateTime now, List<EquipmentEntity> equipments, out int removedCount)
         {
             removedCount = 0;
             int totalYield = 0;
+
+            float totalMultiplier = 1f;
+
+            if (equipments != null)
+            {
+                foreach (var equip in equipments)
+                {
+                    totalMultiplier *= (float)equip.GetYieldMultiplier();
+                }
+            }
 
             for (int i = Entities.Count - 1; i >= 0; i--)
             {
                 var entity = Entities[i];
                 int baseAmount = entity.GetAvailableYield(now);
+                int bonusAmount = (int)Math.Floor(baseAmount * totalMultiplier);
 
-                // Tính bonus từ thiết bị
-                int bonusAmount = equipment != null ? equipment.ApplyBonus(baseAmount) : baseAmount;
-
-                // Cộng thêm buff từ đất (nếu có)
+                // Land buff
                 if (Land != null && Land.Config.YieldBuffPercent > 0)
                 {
                     bonusAmount = (int)(bonusAmount * (1 + Land.Config.YieldBuffPercent / 100f));
                 }
 
-                // Cập nhật số trái đã thu
-                entity.Harvest(now); // chỉ cập nhật Yielded thôi
+                entity.Harvest(now);
                 totalYield += bonusAmount;
 
                 if (entity.Yielded >= entity.MaxYield)
                 {
-                    Entities.RemoveAt(i); // cây chết
+                    Entities.RemoveAt(i);
                     removedCount++;
                 }
             }
