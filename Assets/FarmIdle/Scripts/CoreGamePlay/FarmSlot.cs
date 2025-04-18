@@ -17,6 +17,7 @@ namespace CoreGamePlay
         public bool IsEmpty => Entities.Count == 0;
         public bool IsFull => Entities.Count >= MaxEntityPerSlot;
         // Callback để thông báo UI cần update lại
+        [JsonIgnore]
         public Action OnEntitiesChanged;
 
         public bool CanAssign(string type)
@@ -81,14 +82,14 @@ namespace CoreGamePlay
         // Gộp logic hiển thị countdown chính
         public string GetRemainingTimeText(DateTime now)
         {
-            // 1. Dọn dẹp: Xoá các cây đã héo (quá 1h sau khi full trái)
+            // 1. Cleanup: Remove expired entities (quá 1h sau khi đầy trái)
             int removed = Entities.RemoveAll(e => e.IsExpired(now) && e.CheckDestroyItem(now));
             if (removed > 0)
             {
-                OnEntitiesChanged?.Invoke(); // thông báo UI cập nhật lại
+                OnEntitiesChanged?.Invoke(); // Gọi UI update lại
             }
 
-            // Ưu tiên hiển thị cây đã full trái và đang đếm ngược đến thời điểm héo
+            // 2. Ưu tiên: Cảnh báo cây đang sắp héo
             var rotEntity = Entities
                 .Where(e => e.IsExpired(now))
                 .OrderBy(e => e.GetSecondsUntilRot(now))
@@ -98,23 +99,23 @@ namespace CoreGamePlay
             {
                 int rotSeconds = rotEntity.GetSecondsUntilRot(now);
                 var rotSpan = TimeSpan.FromSeconds(rotSeconds);
-                return $"Sắp héo! {rotSpan:hh\\:mm\\:ss}";
+                return $"Sắp héo! {(int)rotSpan.TotalHours:00}:{rotSpan.Minutes:00}:{rotSpan.Seconds:00}";
             }
-            else
-            {
-                var firstHarvestEntity = Entities
-                    .Where(e => !e.IsExpired(now))
-                    .OrderBy(e => e.RemainingLifeSeconds(now))
-                    .FirstOrDefault();
 
-                if (firstHarvestEntity != null)
-                {
-                    int remainSeconds = firstHarvestEntity.RemainingLifeSeconds(now);
-                    var remainSpan = TimeSpan.FromSeconds(remainSeconds);
-                    return $"Còn {remainSpan:hh\\:mm\\:ss}";
-                }
-                return "";
+            // 3. Countdown bình thường: Cây gần hết vòng đời nhất
+            var nextEntity = Entities
+                .Where(e => !e.IsExpired(now))
+                .OrderBy(e => e.RemainingLifeSeconds(now))
+                .FirstOrDefault();
+
+            if (nextEntity != null)
+            {
+                int remaining = nextEntity.RemainingLifeSeconds(now);
+                var remainSpan = TimeSpan.FromSeconds(remaining);
+                return $"Còn {(int)remainSpan.TotalHours:00}:{remainSpan.Minutes:00}:{remainSpan.Seconds:00}";
             }
+
+            return ""; // Không có cây nào để tính
         }
 
         public int GetTotalYielded() => Entities.Sum(e => e.Yielded);

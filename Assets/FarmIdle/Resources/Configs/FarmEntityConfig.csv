@@ -1,5 +1,6 @@
-Id,Type,DisplayName,SeedRequired,YieldInterval,MaxYield,ProductName
-Tomato,Crop,Cà chua,1,600,40,Tomato
-Blueberry,Crop,Việt quất,1,900,40,Blueberry
-Strawberry,Crop,Dâu tây,1,300,20,Strawberry
-Cow,Animal,Bò sữa,1,1800,100,Milk
+Id,DisplayName,Type,YieldInterval,MaxYield,SeedRequired,SellPrice,ProductId
+Tomato,Tomato,Crop,600,40,1,5,Tomato
+Blueberry,Blueberry,Crop,900,40,1,8,Blueberry
+Strawberry,Strawberry,Crop,300,20,1,10,Strawberry
+Cow,Cow,Animal,1800,100,1,15,Milk
+Chicken,Chicken,Animal,600,60,1,7,Egg

@@ -7,4 +7,6 @@ public class FarmEntityConfigData
     public int YieldInterval;
     public int MaxYield;
     public string ProductName;
+    public int SellPrice;
+    public string ProductId;
 }

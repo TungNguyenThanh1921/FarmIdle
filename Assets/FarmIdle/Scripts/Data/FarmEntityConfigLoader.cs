@@ -35,11 +35,12 @@ public static class FarmEntityConfigLoader
             {
                 Id = cells[0].Trim(),
                 Type = cells[1].Trim(),
-                DisplayName = cells[2].Trim(),
-                SeedRequired = int.Parse(cells[3]),
-                YieldInterval = int.Parse(cells[4]),
-                MaxYield = int.Parse(cells[5]),
-                ProductName = cells[6].Trim()
+                DisplayName = cells[2],
+                YieldInterval = int.Parse(cells[3]),
+                MaxYield = int.Parse(cells[4]),
+                SeedRequired = int.Parse(cells[5]),
+                SellPrice = int.Parse(cells[6]),
+                ProductId = cells[7].Trim()
             };
 
             All[config.Id] = config;

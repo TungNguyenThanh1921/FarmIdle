@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Data;
 
 namespace Service
@@ -19,7 +20,10 @@ namespace Service
         {
             _userData.Gold += amount;
         }
-
+        public Dictionary<string, int> GetAllItems()
+        {
+            return new Dictionary<string, int>(_userData.Inventory);
+        }
         public bool HasEnoughGold(int amount) => _userData.Gold >= amount;
 
         public bool SpendGold(int amount)
@@ -57,6 +61,37 @@ namespace Service
             _userData.Inventory[itemName] -= amount;
             return true;
         }
-     
+        public int SellAllHarvestedProducts()
+        {
+            int totalGold = 0;
+            var keysToRemove = new List<string>();
+
+            foreach (var kvp in _userData.Inventory)
+            {
+                string itemId = kvp.Key;
+                int quantity = kvp.Value;
+
+                if (itemId.EndsWith("Seed")) continue;
+
+                // Tìm config theo ProductId
+                var cfg = FarmEntityConfigLoader.All.Values
+                    .FirstOrDefault(c => c.ProductId == itemId);
+
+                if (cfg != null)
+                {
+                    int goldEarned = cfg.SellPrice * quantity;
+                    totalGold += goldEarned;
+                    keysToRemove.Add(itemId);
+                }
+            }
+
+            foreach (var id in keysToRemove)
+            {
+                _userData.Inventory.Remove(id);
+            }
+
+            _userData.Gold += totalGold;
+            return totalGold;
+        }
     }
 }

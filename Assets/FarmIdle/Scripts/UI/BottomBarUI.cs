@@ -1,18 +1,43 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BottomBarUI : MonoBehaviour
 {
-    // Start is called before the first frame update
+    [SerializeField] private Button Inventory;
+    [SerializeField] private Button Shop;
+    [SerializeField] private Button Tools;
     void Start()
     {
-        
+
+        Inventory.onClick.RemoveAllListeners();
+        Inventory.onClick.AddListener(() =>
+        {
+            OpenInventory();
+        });
+        Shop.onClick.RemoveAllListeners();
+        Shop.onClick.AddListener(() =>
+        {
+            OpenShop();
+        });
+        Tools.onClick.RemoveAllListeners();
+        Tools.onClick.AddListener(() =>
+        {
+            OpenTools();
+        });
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OpenInventory()
     {
-        
+        PopupManager.Instance.OpenPopup(PopupIDs.Inventory);
+    }
+    private void OpenTools()
+    {
+
+    }
+    private void OpenShop()
+    {
+
     }
 }
