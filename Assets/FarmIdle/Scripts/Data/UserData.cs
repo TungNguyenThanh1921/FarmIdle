@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CoreBase;
 using CoreGamePlay;
 using Data;
 
@@ -12,7 +13,7 @@ namespace Data
         public List<EquipmentEntity> Equipments = new();
         public List<FarmSlot> Slots = new();
         public List<WorkerEntity> Workers = new();
-        public System.DateTime LastExitTime;
+        public ITimeProvider LastExitTime;
 
         public void InitData()
         {
@@ -33,7 +34,11 @@ namespace Data
             Workers = new List<WorkerEntity>();
             Workers.Add(new WorkerEntity(WorkerConfigLoader.GetDefault()));
 
-            LastExitTime = DateTime.Now;
+            LastExitTime = null;
+        }
+        public void SaveExitTime(ITimeProvider time)
+        {
+            LastExitTime = time;
         }
 
         public void ClearData()

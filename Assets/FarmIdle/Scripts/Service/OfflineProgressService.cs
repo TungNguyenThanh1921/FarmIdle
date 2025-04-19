@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CoreBase;
 using Data;
 
 namespace Service
@@ -8,20 +9,22 @@ namespace Service
     {
         private readonly UserData _userData;
 
-        public OfflineProgressService(UserData userData)
+        private readonly ITimeProvider time;
+        public OfflineProgressService(UserData userData, ITimeProvider timeProvider)
         {
             _userData = userData;
+            time = timeProvider;
         }
 
         public TimeSpan GetOfflineDuration()
         {
-            return DateTime.Now - _userData.LastExitTime;
+            return time.Now - _userData.LastExitTime.Now;
         }
 
         public List<OfflineYieldResult> CalculateOfflineYield()
         {
             var results = new List<OfflineYieldResult>();
-            var now = DateTime.Now;
+            var now = time.Now;
 
             foreach (var slot in _userData.Slots)
             {
@@ -29,7 +32,7 @@ namespace Service
 
                 foreach (var entity in slot.Entities)
                 {
-                    int available = entity.GetAvailableYield(now);
+                    int available = entity.GetAvailableYield(time);
                     if (available > 0)
                     {
                         results.Add(new OfflineYieldResult
@@ -39,7 +42,7 @@ namespace Service
                             Amount = available
                         });
 
-                        entity.Harvest(now);
+                        entity.Harvest(time);
                     }
                 }
             }
@@ -49,7 +52,7 @@ namespace Service
 
         public void SaveCurrentTimeAsExit()
         {
-            _userData.LastExitTime = DateTime.Now;
+            _userData.SaveExitTime(time);
         }
     }
 

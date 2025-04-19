@@ -1,37 +1,51 @@
 using System;
 using Data;
+using Newtonsoft.Json;
+using CoreBase;
 
 namespace CoreGamePlay
 {
     public class WorkerEntity
     {
-        public WorkerConfigData Config { get; }
-        public bool IsBusy { get; private set; }
-        public DateTime TaskStartedAt { get; private set; }
-        public TimeSpan TaskDuration { get; private set; }
-        public WorkerEntity()
-        {
-            Config = WorkerConfigLoader.GetDefault(); // fallback config
-        }
-        public WorkerEntity(WorkerConfigData config)
-        {
-            Config = config;
-            TaskDuration = TimeSpan.FromSeconds(config.ActionTimeSeconds);
-        }
+        [JsonProperty] public WorkerConfigData Config { get; private set; }
+        [JsonProperty] public bool IsBusy { get; private set; }
+        [JsonProperty] public DateTime TaskStartedAt { get; private set; }
 
-        public void AssignTask(DateTime startTime)
+        [JsonIgnore] public TimeSpan TaskDuration => TimeSpan.FromSeconds(Config.ActionTimeSeconds);
+
+        public WorkerEntity() => Config = WorkerConfigLoader.GetDefault();
+
+        public WorkerEntity(WorkerConfigData config) => Config = config;
+        [JsonProperty] public int? WorkingSlotIndex { get; private set; } = null;
+        public void AssignTask(ITimeProvider time, int slotIndex)
         {
             IsBusy = true;
-            TaskStartedAt = startTime;
+            TaskStartedAt = time.Now;
+            WorkingSlotIndex = slotIndex;
         }
 
-        public bool IsTaskDone(DateTime now) => IsBusy && now >= TaskStartedAt + TaskDuration;
-        public void CompleteTask() => IsBusy = false;
+        public void CancelTask()
+        {
+            IsBusy = false;
+            WorkingSlotIndex = null;
+        }
 
-        // Tiện ích
+        public bool IsTaskDone(ITimeProvider time)
+        {
+            return IsBusy && time.Now >= TaskStartedAt + TaskDuration;
+        }
+
+        public void CompleteTask()
+        {
+            IsBusy = false;
+            WorkingSlotIndex = null;
+        }
+        public bool IsIdle(ITimeProvider time) => !IsBusy || IsTaskDone(time);
+
         public string Id => Config.Id;
         public string DisplayName => Config.DisplayName;
         public bool IsAuto => Config.AutoHarvest;
+        public string Role => Config.Role;
         public int Price => Config.Price;
     }
 }

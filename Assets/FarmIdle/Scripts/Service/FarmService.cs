@@ -45,7 +45,12 @@ namespace Service
 
             string cropId = slot.LockedType;
             if (!FarmEntityConfigLoader.All.TryGetValue(cropId, out var cfg)) return false;
-
+            // 👇 Hủy worker nếu đang gán
+            if (slot.AssignedWorker != null)
+            {
+                slot.AssignedWorker.CancelTask();
+                slot.AssignedWorker = null;
+            }
             string seedId = cropId + "Seed";
             if (!inventory.HasEnoughItem(seedId, cfg.SeedRequired)) return false;
 
@@ -63,10 +68,15 @@ namespace Service
 
             var slot = userData.Slots[slotIndex];
 
-            if (!slot.CanHarvestAny(time.Now)) return 0;
-
+            if (!slot.CanHarvestAny(time)) return 0;
+            // 👇 Hủy worker nếu đang gán
+            if (slot.AssignedWorker != null)
+            {
+                slot.AssignedWorker.CancelTask();
+                slot.AssignedWorker = null;
+            }
             int removed;
-            int harvested = slot.HarvestAll(time.Now, userData.Equipments, out removed);
+            int harvested = slot.HarvestAll(time, userData.Equipments, out removed);
 
             if (harvested > 0)
             {
@@ -76,6 +86,7 @@ namespace Service
 
             return harvested;
         }
+
         public bool TryAssignRoleToSlot(int slotIndex, string type)
         {
             if (slotIndex < 0 || slotIndex >= userData.Slots.Count)
@@ -83,6 +94,18 @@ namespace Service
 
             var slot = userData.Slots[slotIndex];
             return slot.AssignRole(type);
+        }
+        public bool CanHarvest(int slotIndex)
+        {
+            if (slotIndex < 0 || slotIndex >= userData.Slots.Count) return false;
+            return userData.Slots[slotIndex].CanHarvestAny(time);
+        }
+
+        public bool CanPlant(int slotIndex)
+        {
+            if (slotIndex < 0 || slotIndex >= userData.Slots.Count) return false;
+            var slot = userData.Slots[slotIndex];
+            return !slot.IsFull && !string.IsNullOrEmpty(slot.LockedType);
         }
     }
 }

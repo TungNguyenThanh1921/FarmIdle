@@ -5,6 +5,8 @@ using CoreGamePlay;
 using Service;
 using System;
 using System.Collections;
+using CoreBase;
+using Observer;
 
 public class FarmSlotUIItem : MonoBehaviour
 {
@@ -12,6 +14,7 @@ public class FarmSlotUIItem : MonoBehaviour
     public TextMeshProUGUI nameText;
     public TextMeshProUGUI statusText;
     public TextMeshProUGUI slotedText;
+    public TextMeshProUGUI workerText;
 
     public TextMeshProUGUI timeText;
     public Button plantButton;
@@ -20,16 +23,21 @@ public class FarmSlotUIItem : MonoBehaviour
     public int slotIndex;
     public FarmService farmService;
     private FarmSlot slot;
+    private ITimeProvider timeProvider;
 
-    public void Init(int index, FarmSlot slot, FarmService service)
+    public void Init(int index, FarmSlot slot, FarmService service, ITimeProvider time)
     {
         this.slotIndex = index;
         this.slot = slot;
         this.farmService = service;
-        if(slot == null) return;
+        this.timeProvider = time;
+
+        if (slot == null) return;
+
         slot.OnEntitiesChanged += RefreshUI;
         RefreshUI();
         StartCoroutine(UpdateTimeRemaining());
+
         plantButton.onClick.RemoveAllListeners();
         plantButton.onClick.AddListener(OnPlantClick);
 
@@ -51,7 +59,7 @@ public class FarmSlotUIItem : MonoBehaviour
 
             if (slot.LockedType != null)
             {
-                timeText.text = slot.GetRemainingTimeText(DateTime.Now);
+                timeText.text = slot.GetRemainingTimeText(timeProvider);
             }
         }
     }
@@ -67,9 +75,10 @@ public class FarmSlotUIItem : MonoBehaviour
             buttonPlus.gameObject.SetActive(true);
             plantButton.gameObject.SetActive(false);
             harvestButton.gameObject.SetActive(false);
-
+            workerText.text = "";
             return;
         }
+        workerText.text = slot.AssignedWorker == null ? "" : "có nông dân đang làm";
         buttonPlus.gameObject.SetActive(false);
         slotedText.text = "Số ô đã trồng: " + slot.TotalPlantedSlot().ToString();
         string product = slot.GetProductName();
@@ -79,10 +88,14 @@ public class FarmSlotUIItem : MonoBehaviour
         int maxYield = slot.GetTotalMaxYield();
         statusText.text = $"Cây: {slot.Entities.Count}/5 | Thu hoạch: {totalYielded}/{maxYield}";
 
-        timeText.text = slot.GetRemainingTimeText(DateTime.Now);
+        timeText.text = slot.GetRemainingTimeText(timeProvider);
 
         plantButton.gameObject.SetActive(!slot.IsFull);
-        harvestButton.gameObject.SetActive(slot.CanHarvestAny(DateTime.Now));
+        harvestButton.gameObject.SetActive(slot.CanHarvestAny(timeProvider));
+        if(slot.AssignedWorker != null)
+        {
+            harvestButton.GetComponentInChildren<TMP_Text>().text = "Worker Đang thu hoạch";
+        }
     }
 
     private void OnPlantClick()
@@ -91,11 +104,11 @@ public class FarmSlotUIItem : MonoBehaviour
         if (success)
         {
             RefreshUI();
-            Debug.Log($"✅ Đã trồng vào slot {slotIndex}");
+            Debug.Log($"Đã trồng vào slot {slotIndex}");
         }
         else
         {
-            Debug.LogWarning($"❌ Không thể trồng ở slot {slotIndex}");
+            Debug.LogWarning($"Không thể trồng ở slot {slotIndex}");
         }
     }
 
@@ -105,11 +118,12 @@ public class FarmSlotUIItem : MonoBehaviour
         if (amount > 0)
         {
             RefreshUI();
-            Debug.Log($"🧺 Thu hoạch {amount} sản phẩm từ slot {slotIndex}");
+            ObserverManager.Instance.Notify(EventKeys.UI.UPDATE_MONEY);
+            Debug.Log($"Thu hoạch {amount} sản phẩm từ slot {slotIndex}");
         }
         else
         {
-            Debug.Log($"⚠️ Không có gì để thu hoạch ở slot {slotIndex}");
+            Debug.Log($"Không có gì để thu hoạch ở slot {slotIndex}");
         }
     }
 }

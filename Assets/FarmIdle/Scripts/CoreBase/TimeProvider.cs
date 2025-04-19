@@ -11,4 +11,5 @@ namespace CoreBase
     {
         public DateTime Now => DateTime.Now;
     }
+    
 }

@@ -19,8 +19,9 @@ public class FarmController : MonoBehaviour
     private FarmService farmService;
     private InventoryService inventoryService;
     private UserData userData;
-
+    public WorkerService workerService;
     private List<FarmSlotUIItem> slotUIItems = new();
+    private ITimeProvider timeProvider;
 
     IEnumerator Start()
     {
@@ -32,13 +33,26 @@ public class FarmController : MonoBehaviour
     void OnDestroy()
     {
         ObserverEventManager.detach(EventKeys.UI.UPDATE_LAND, (Action)InitSlotUI);
+        StopAllCoroutines();
     }
     private void InitServices()
     {
         // 🧠 Tạo dữ liệu và các service cần thiết
         userData = GameData.Instance.userData; // hoặc tạo mới
         inventoryService = new InventoryService(userData);
+        timeProvider = new SystemTimeProvider();
         farmService = new FarmService(userData, inventoryService, new SystemTimeProvider());
+        workerService = new WorkerService(userData, inventoryService, farmService, timeProvider);
+        workerService.RebindAssignedSlots();
+        StartCoroutine(TickCheckWorker());
+    }
+    IEnumerator TickCheckWorker()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(1);
+            workerService.Tick();
+        }
     }
     private void InitSlotUI()
     {
@@ -53,7 +67,7 @@ public class FarmController : MonoBehaviour
             var go = Instantiate(farmSlotItemPrefab, contentRoot);
             var uiItem = go.GetComponent<FarmSlotUIItem>();
             uiItem.gameObject.SetActive(true);
-            uiItem.Init(i, userData.Slots[i], farmService);
+            uiItem.Init(i, userData.Slots[i], farmService, timeProvider);
             slotUIItems.Add(uiItem);
         }
         farmSlotItemPrefab.SetActive(false);
