@@ -6,7 +6,6 @@ public static class FarmEntityConfigLoader
     public static Dictionary<string, FarmEntityConfigData> All = new();
     public static void Load()
     {
-        // Đảm bảo dòng này có
         All = new Dictionary<string, FarmEntityConfigData>();
         LoadFromResources();
     }
@@ -16,7 +15,7 @@ public static class FarmEntityConfigLoader
         TextAsset csv = Resources.Load<TextAsset>("Configs/FarmEntityConfig");
         if (csv == null)
         {
-            Debug.LogError("❌ Không tìm thấy FarmEntityConfig.csv trong Resources/Configs/");
+            Debug.LogError("Không tìm thấy FarmEntityConfig.csv trong Resources/Configs/");
             return;
         }
 
@@ -41,14 +40,14 @@ public static class FarmEntityConfigLoader
                 SeedRequired = int.Parse(cells[5].Trim()),
                 SellPrice = int.Parse(cells[6].Trim()),
                 ProductId = cells[7].Trim(),
-                BuyPrice = int.Parse(cells[8].Trim()),     // ✅ đúng là 30
+                BuyPrice = int.Parse(cells[8].Trim()),
                 IsBulk = bool.TryParse(cells[9].Trim(), out bool isBulk) && isBulk
             };
 
             All[config.Id] = config;
         }
 
-        Debug.Log($"✅ Loaded FarmEntityConfig: {All.Count} loại.");
+        Debug.Log($"Loaded FarmEntityConfig: {All.Count} loại.");
     }
 
     public static List<FarmEntityConfigData> GetAllByType(string type)

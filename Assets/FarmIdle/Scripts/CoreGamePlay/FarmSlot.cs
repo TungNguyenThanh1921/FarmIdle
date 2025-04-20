@@ -38,20 +38,20 @@ namespace CoreGamePlay
             Entities.Add(factory());
             return true;
         }
-
+       
         public int HarvestAll(ITimeProvider time, List<EquipmentEntity> equipments, out int removedCount)
         {
             removedCount = 0;
             int totalYield = 0;
 
             float totalMultiplier = 1f;
-            if (equipments != null)
-            {
-                foreach (var equip in equipments)
-                {
-                    totalMultiplier *= (float)equip.GetYieldMultiplier();
-                }
-            }
+            // if (equipments != null)
+            // {
+            //     foreach (var equip in equipments)
+            //     {
+            //         totalMultiplier *= (float)equip.GetYieldMultiplier();
+            //     }
+            // }
 
             for (int i = Entities.Count - 1; i >= 0; i--)
             {

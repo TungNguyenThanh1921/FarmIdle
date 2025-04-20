@@ -20,7 +20,7 @@ public static class WorkerConfigLoader
         TextAsset csv = Resources.Load<TextAsset>("Configs/WorkerConfig");
         if (csv == null)
         {
-            Debug.LogError("❌ Không tìm thấy WorkerConfig.csv trong Resources/Configs/");
+            Debug.LogError("Không tìm thấy WorkerConfig.csv trong Resources/Configs/");
             return;
         }
 
@@ -48,6 +48,6 @@ public static class WorkerConfigLoader
             All[config.Id] = config;
         }
 
-        Debug.Log($"✅ Loaded WorkerConfig: {All.Count} loại công nhân.");
+        Debug.Log($"Loaded WorkerConfig: {All.Count} loại công nhân.");
     }
 }

@@ -21,16 +21,7 @@ namespace Service
         /// <summary>
         /// Trồng tự động vào mảnh đầu tiên hợp lệ (nếu dùng)
         /// </summary>
-        public bool TryPlant()
-        {
-            for (int i = 0; i < userData.Slots.Count; i++)
-            {
-                if (TryPlantAtSlot(i)) return true;
-            }
-
-            UnityEngine.Debug.LogWarning("❌ Không tìm thấy slot hợp lệ để trồng.");
-            return false;
-        }
+       
 
         /// <summary>
         /// Trồng 1 cây vào đúng mảnh chỉ định
@@ -45,12 +36,7 @@ namespace Service
 
             string cropId = slot.LockedType;
             if (!FarmEntityConfigLoader.All.TryGetValue(cropId, out var cfg)) return false;
-            // 👇 Hủy worker nếu đang gán
-            if (slot.AssignedWorker != null)
-            {
-                slot.AssignedWorker.CancelTask();
-                slot.AssignedWorker = null;
-            }
+         
             string seedId = cropId + "Seed";
             if (!inventory.HasEnoughItem(seedId, cfg.SeedRequired)) return false;
 
@@ -69,12 +55,7 @@ namespace Service
             var slot = userData.Slots[slotIndex];
 
             if (!slot.CanHarvestAny(time)) return 0;
-            // 👇 Hủy worker nếu đang gán
-            if (slot.AssignedWorker != null)
-            {
-                slot.AssignedWorker.CancelTask();
-                slot.AssignedWorker = null;
-            }
+           
             int removed;
             int harvested = slot.HarvestAll(time, userData.Equipments, out removed);
 
@@ -94,11 +75,6 @@ namespace Service
 
             var slot = userData.Slots[slotIndex];
             return slot.AssignRole(type);
-        }
-        public bool CanHarvest(int slotIndex)
-        {
-            if (slotIndex < 0 || slotIndex >= userData.Slots.Count) return false;
-            return userData.Slots[slotIndex].CanHarvestAny(time);
         }
 
         public bool CanPlant(int slotIndex)

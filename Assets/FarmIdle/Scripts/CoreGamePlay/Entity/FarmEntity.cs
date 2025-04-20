@@ -20,7 +20,12 @@ namespace CoreGamePlay
             BornAt = bornAt;
             Yielded = 0;
         }
-
+        public void AddYield(int amount)
+        {
+            Yielded += amount;
+            if (Yielded > MaxYield)
+                Yielded = MaxYield;
+        }
         public bool IsExpired(ITimeProvider time)
         {
             var now = time.Now;
@@ -45,9 +50,6 @@ namespace CoreGamePlay
             Yielded += baseAmount;
             return finalAmount;
         }
-        public bool IsWaitingForFinalHarvest(ITimeProvider time) =>
-            Yielded >= MaxYield && !IsExpired(time);
-
         public int GetSecondsUntilNextYield(ITimeProvider time)
         {
             int total = (int)((time.Now - BornAt).TotalSeconds);

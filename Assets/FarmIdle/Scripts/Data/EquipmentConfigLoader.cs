@@ -20,7 +20,7 @@ public static class EquipmentConfigLoader
         TextAsset csv = Resources.Load<TextAsset>("Configs/EquipmentConfig");
         if (csv == null)
         {
-            Debug.LogError("❌ Không tìm thấy EquipmentConfig.csv trong Resources/Configs/");
+            Debug.LogError("Không tìm thấy EquipmentConfig.csv trong Resources/Configs/");
             return;
         }
 
@@ -49,6 +49,6 @@ public static class EquipmentConfigLoader
             All[config.Id] = config;
         }
 
-        Debug.Log($"✅ Loaded EquipmentConfig: {All.Count} loại thiết bị.");
+        Debug.Log($"Loaded EquipmentConfig: {All.Count} loại thiết bị.");
     }
 }

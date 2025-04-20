@@ -54,10 +54,10 @@ public class ShopPopup : PopupTemplate
                         if (shopService.BuyEntity(cfg.Id))
                         {
                             ObserverManager.Instance.Notify(EventKeys.UI.UPDATE_MONEY);
-                            Debug.Log($"✅ Mua {cfg.Id} thành công");
+                            Debug.Log($"Mua {cfg.Id} thành công");
                         }
                         else
-                            Debug.LogWarning("❌ Không đủ gold hoặc lỗi mua");
+                            Debug.LogWarning("Không đủ gold hoặc lỗi mua");
                     });
                 }
                 break;
@@ -70,13 +70,13 @@ public class ShopPopup : PopupTemplate
                     {
                         if (shopService.BuyLand(cfg.Id))
                         {
-                            Debug.Log($"✅ Mua Land {cfg.Id} thành công");
+                            Debug.Log($"Mua Land {cfg.Id} thành công");
                             ObserverManager.Instance.Notify(EventKeys.UI.UPDATE_MONEY);
                             ObserverManager.Instance.Notify(EventKeys.UI.UPDATE_LAND);
 
                         }
                         else
-                            Debug.LogWarning("❌ Không đủ gold hoặc lỗi mua");
+                            Debug.LogWarning("Không đủ gold hoặc lỗi mua");
                     });
                 }
                 break;
@@ -90,11 +90,11 @@ public class ShopPopup : PopupTemplate
                         if (shopService.HireWorker(cfg.Id))
                         {
                             ObserverManager.Instance.Notify(EventKeys.UI.UPDATE_MONEY);
-                            Debug.Log($"✅ Thuê {cfg.Id} thành công");
+                            Debug.Log($"Thuê {cfg.Id} thành công");
 
                         }
                         else
-                            Debug.LogWarning("❌ Không đủ gold hoặc lỗi thuê");
+                            Debug.LogWarning("Không đủ gold hoặc lỗi thuê");
                     });
                 }
                 break;
@@ -108,10 +108,10 @@ public class ShopPopup : PopupTemplate
                         if (shopService.BuyEquipment(cfg.Id))
                         {
                             ObserverManager.Instance.Notify(EventKeys.UI.UPDATE_MONEY);
-                            Debug.Log($"✅ Mua Equipment {cfg.Id} thành công");
+                            Debug.Log($"Mua Equipment {cfg.Id} thành công");
                         }
                         else
-                            Debug.LogWarning("❌ Không đủ gold hoặc lỗi mua thiết bị");
+                            Debug.LogWarning("Không đủ gold hoặc lỗi mua thiết bị");
                     });
                 }
                 break;

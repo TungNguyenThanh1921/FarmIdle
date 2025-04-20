@@ -8,7 +8,7 @@ public static class FarmEntityFactory
     {
         if (!FarmEntityConfigLoader.All.TryGetValue(entityId, out var data))
         {
-            UnityEngine.Debug.LogError($"❌ Không tìm thấy cấu hình cho: {entityId}");
+            UnityEngine.Debug.LogError($"Không tìm thấy cấu hình cho: {entityId}");
             return null;
         }
 
@@ -16,7 +16,7 @@ public static class FarmEntityFactory
         {
             "Crop" => new Crop(data.Id, data.YieldInterval, data.MaxYield, now),
             "Animal" => new Animal(data.Id, data.YieldInterval, data.MaxYield, now),
-            _ => throw new NotImplementedException($"⚠️ Chưa hỗ trợ type: {data.Type}")
+            _ => throw new NotImplementedException($"Chưa hỗ trợ type: {data.Type}")
         };
     }
 }

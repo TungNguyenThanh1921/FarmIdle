@@ -37,13 +37,15 @@ public class FarmController : MonoBehaviour
     }
     private void InitServices()
     {
-        // 🧠 Tạo dữ liệu và các service cần thiết
+        // Tạo dữ liệu và các service cần thiết
         userData = GameData.Instance.userData; // hoặc tạo mới
         inventoryService = new InventoryService(userData);
         timeProvider = new SystemTimeProvider();
         farmService = new FarmService(userData, inventoryService, new SystemTimeProvider());
         workerService = new WorkerService(userData, inventoryService, farmService, timeProvider);
         workerService.RebindAssignedSlots();
+        workerService.ProcessOfflineWork();// Xử lý thời gian offline
+
         StartCoroutine(TickCheckWorker());
     }
     IEnumerator TickCheckWorker()

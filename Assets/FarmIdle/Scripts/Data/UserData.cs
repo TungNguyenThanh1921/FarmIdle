@@ -17,14 +17,14 @@ namespace Data
 
         public void InitData()
         {
-            Gold = 1000;
+            Gold = 10000;
             Inventory = new Dictionary<string, int>();
             Inventory["TomatoSeed"] = 10;
             Inventory["BlueberrySeed"] = 10;
             Inventory["CowSeed"] = 10;
 
             Equipments = new List<EquipmentEntity>();
-            Equipments.Add(new EquipmentEntity(EquipmentConfigLoader.GetDefault()));
+
             Slots = new List<FarmSlot>();
             for (int i = 0; i < 3; i++)
             {
@@ -32,8 +32,6 @@ namespace Data
                 Slots.Add(new FarmSlot(landEntity));
             }
             Workers = new List<WorkerEntity>();
-            Workers.Add(new WorkerEntity(WorkerConfigLoader.GetDefault()));
-
             LastExitTime = null;
         }
         public void SaveExitTime(ITimeProvider time)

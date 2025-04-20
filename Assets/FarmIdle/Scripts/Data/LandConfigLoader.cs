@@ -20,7 +20,7 @@ public static class LandConfigLoader
         TextAsset csv = Resources.Load<TextAsset>("Configs/LandConfig");
         if (csv == null)
         {
-            Debug.LogError("❌ Không tìm thấy LandConfig.csv trong Resources/Configs/");
+            Debug.LogError("Không tìm thấy LandConfig.csv trong Resources/Configs/");
             return;
         }
 
@@ -47,6 +47,6 @@ public static class LandConfigLoader
             All[config.Id] = config;
         }
 
-        Debug.Log($"✅ Loaded LandConfig: {All.Count} loại đất.");
+        Debug.Log($"Loaded LandConfig: {All.Count} loại đất.");
     }
 }

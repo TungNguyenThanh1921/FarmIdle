@@ -1,3 +1,4 @@
+using System.Linq;
 using CoreGamePlay;
 using Data;
 using Service;
@@ -45,10 +46,30 @@ public class ShopService
         if (!WorkerConfigLoader.All.TryGetValue(workerId, out var config))
             return false;
 
+        // Nếu tất cả slot đã có worker  không thuê nữa
+        bool allSlotsAssigned = _userData.Slots
+            .Where(s => !string.IsNullOrEmpty(s.LockedType))
+            .All(s => _userData.Workers.Any(w => w.WorkingSlotIndex == _userData.Slots.IndexOf(s)));
+
+        if (allSlotsAssigned)
+            return false;
+
         if (!_inventory.SpendGold(config.Price)) return false;
 
-        _userData.Workers.Add(new WorkerEntity(config));
-        return true;
+        // Tìm slot đầu tiên chưa có worker để gán
+        for (int i = 0; i < _userData.Slots.Count; i++)
+        {
+            var slot = _userData.Slots[i];
+            if (!_userData.Workers.Any(w => w.WorkingSlotIndex == i))
+            {
+                var worker = new WorkerEntity(config);
+                worker.AssignSlot(i);
+                _userData.Workers.Add(worker);
+                return true;
+            }
+        }
+
+        return false; // fallback nếu không tìm được slot
     }
 
     public bool BuyEquipment(string equipId)

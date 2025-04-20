@@ -13,13 +13,9 @@ namespace Service
             _userData = userData;
         }
 
-        // VÀNG 💰
+        // VÀNG
         public int GetGold() => _userData.Gold;
 
-        public void AddGold(int amount)
-        {
-            _userData.Gold += amount;
-        }
         public Dictionary<string, int> GetAllItems()
         {
             return new Dictionary<string, int>(_userData.Inventory);
@@ -33,7 +29,7 @@ namespace Service
             return true;
         }
 
-        // TÀI NGUYÊN 🌽🥛🫐
+        // TÀI NGUYÊN 
         public int GetItemAmount(string itemName)
         {
             if (_userData.Inventory.TryGetValue(itemName, out int amount))

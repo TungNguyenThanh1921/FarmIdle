@@ -16,7 +16,7 @@ public class SelectFarmSlotRolePopup : PopupTemplate
         data = _data as FarmSlotUIItem;
         if (data == null)
         {
-            Debug.LogError("❌ Dữ liệu truyền vào popup không hợp lệ");
+            Debug.LogError("Dữ liệu truyền vào popup không hợp lệ");
             return;
         }
 
@@ -48,13 +48,13 @@ public class SelectFarmSlotRolePopup : PopupTemplate
         bool result = data.farmService.TryAssignRoleToSlot(data.slotIndex, selectedId);
         if (result)
         {
-            Debug.Log($"✅ Gán loại {selectedId} cho slot {data.slotIndex}");
+            Debug.Log($"Gán loại {selectedId} cho slot {data.slotIndex}");
             data.RefreshUI(); // nếu có
             PopupManager.Instance.ClosePopup();
         }
         else
         {
-            Debug.LogWarning($"❌ Gán loại thất bại: {selectedId}");
+            Debug.LogWarning($"Gán loại thất bại: {selectedId}");
         }
     }
 }
