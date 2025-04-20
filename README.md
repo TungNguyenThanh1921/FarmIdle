@@ -16,13 +16,7 @@
 
 # Giai đoạn 3: Hệ thống công nhân và auto
 	•	WorkerEntity mỗi công nhân chỉ làm việc cố định với 1 slot.
-	•	WorkerService quản lý:
-	•	Tick online mỗi 2 phút
-	•	Gán việc trồng và thu hoạch tự động
-	•	OfflineWork:
-	•	Tính toán số lượng job thực hiện được trong thời gian offline
-	•	Ưu tiên trồng trước, sau đó thu hoạch
-	•	Mô phỏng giống behavior online
+	•	WorkerService quản lý hoạt động của công nhân.
 
 # Giai đoạn 4: Giao diện và Popup
 	•	Giao diện từng slot đất có:
